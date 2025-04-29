@@ -5,6 +5,29 @@ import plotly.express as px
 import mysql.connector
 from lib.lib import consulta
 
+def login():
+    st.title("Iniciar sesión")
+    email = st.text_input("Correo electrónico")
+    password = st.text_input("Contraseña", type="password")
+    login_button = st.button("Entrar")
+
+    if login_button:
+        if (
+            email in st.secrets["usuarios"]
+            and password == st.secrets["usuarios"][email]
+        ):
+            st.session_state["logueado"] = True
+            st.rerun()
+        else:
+            st.error("Credenciales incorrectas. Inténtalo de nuevo.")
+
+# Comprobación de login
+if "logueado" not in st.session_state:
+    st.session_state["logueado"] = False
+
+if not st.session_state["logueado"]:
+    login()
+    st.stop()
 # ----------------------
 # Colores de la marca
 # ----------------------
