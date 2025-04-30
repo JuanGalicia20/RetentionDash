@@ -5,6 +5,13 @@ import plotly.express as px
 import mysql.connector
 from lib.lib import consulta
 
+st.set_page_config(
+    page_title="Dashboard Retención PayFac",      # Título de la pestaña
+    page_icon="src/logo_nuevo.png",               # Favicon (usa tu logo)
+    layout="wide"                                 # Opcional: diseño de ancho completo
+)
+
+
 def login():
     st.title("Iniciar sesión")
     email = st.text_input("Correo electrónico")
@@ -41,7 +48,8 @@ def load_data():
     tran = consulta(st.secrets["query_transacciones"]["query2"])
     return pd.merge(neg, tran, left_on="id", right_on="NegocioId", how="inner")
 
-df = load_data()
+with st.spinner("Cargando datos, por favor espera… ⏳"):
+    df = load_data()
 
 # ——— Preprocesamiento de fechas ———
 df['fecha_afiliacion'] = (
