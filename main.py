@@ -7,7 +7,7 @@ from lib.lib import consulta
 
 st.set_page_config(
     page_title="Dashboard Retención PayFac",      # Título de la pestaña
-    page_icon="src/logo_nuevo.png",               # Favicon (usa tu logo)
+    page_icon="🔎",               # Favicon (usa tu logo)
     layout="wide"                                 # Opcional: diseño de ancho completo
 )
 
@@ -71,6 +71,47 @@ def get_all_weeks(df):
     return pd.DataFrame({'semana_relativa': range(1, max_w+1)})
 
 all_weeks = get_all_weeks(df)
+
+
+# ——— Sidebar de filtros ———
+st.sidebar.header("Filtros de fecha")
+
+# Fecha de afiliación
+fecha_af_inicio = st.sidebar.date_input(
+    "Afiliación desde",
+    value=df['fecha_afiliacion'].min().date()
+)
+fecha_af_fin = st.sidebar.date_input(
+    "Afiliación hasta",
+    value=df['fecha_afiliacion'].max().date()
+)
+# Aseguramos que inicio ≤ fin
+if fecha_af_inicio > fecha_af_fin:
+    fecha_af_inicio, fecha_af_fin = fecha_af_fin, fecha_af_inicio
+
+# Fecha de transacción
+fecha_trx_inicio = st.sidebar.date_input(
+    "Transacción desde",
+    value=df['fecha_transaccion'].min().date()
+)
+fecha_trx_fin = st.sidebar.date_input(
+    "Transacción hasta",
+    value=df['fecha_transaccion'].max().date()
+)
+# Aseguramos que inicio ≤ fin
+if fecha_trx_inicio > fecha_trx_fin:
+    fecha_trx_inicio, fecha_trx_fin = fecha_trx_fin, fecha_trx_inicio
+
+# Aplicar los filtros de fecha
+df = df.loc[
+    (df['fecha_afiliacion'].dt.date >= fecha_af_inicio) &
+    (df['fecha_afiliacion'].dt.date <= fecha_af_fin) &
+    (df['fecha_transaccion'].dt.date >= fecha_trx_inicio) &
+    (df['fecha_transaccion'].dt.date <= fecha_trx_fin)
+]
+
+# ——— Luego siguen tus filtros de cohorte y actividad… ———
+
 
 # ——— Sidebar de filtros ———
 st.sidebar.header("Filtros de cohorte y actividad")
